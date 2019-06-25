@@ -18,7 +18,7 @@ public class Ex1Converter2 implements ItemProcessor<Ex1, Ex1>{
 		Ex1 newEx1 = new Ex1( "--"+item.getFirstName(), item.getLastName()+"--"); 
 		
 		if( log.isInfoEnabled() ) {
-        	log.info("Ex1-2 Converting {} into {}", item, newEx1 );
+        	log.info("Ex-1-2 Converting {} into {}", item, newEx1 );
         }
 
 		return newEx1;

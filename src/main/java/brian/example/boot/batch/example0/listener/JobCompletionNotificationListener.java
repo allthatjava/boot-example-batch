@@ -29,11 +29,7 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 		if(jobExecution.getStatus() == BatchStatus.COMPLETED) {
 			log.info( "===0 Job[{}] Finished ===>>> Time to verify the results", jobExecution.getJobInstance().getJobName() );
 
-			jdbcTemplate.query("SELECT first_name, last_name FROM people",
-				(rs, row) -> new Person(
-					rs.getString(1),
-					rs.getString(2))
-			).forEach(person -> log.info("Found <{}> in the database.", person));
+			getAllPeople();
 		}
 	}
 	
@@ -41,6 +37,18 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 	public void beforeJob(JobExecution jobExecution) {
 		log.info("<<<0 Job[{}] Started ======", jobExecution.getJobInstance().getJobName());
 		
+		deleteAllPeople();
+	}
+
+	private void getAllPeople() {
+		jdbcTemplate.query("SELECT first_name, last_name FROM people",
+			(rs, row) -> new Person(
+				rs.getString(1),
+				rs.getString(2))
+		).forEach(person -> log.info("Found <{}> in the database.", person));
+	}
+
+	private void deleteAllPeople() {
 		try {
 			jdbcTemplate.execute("DELETE FROM people");
 		} catch (DataAccessException e) {
