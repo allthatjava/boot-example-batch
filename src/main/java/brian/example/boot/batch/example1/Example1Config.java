@@ -24,6 +24,12 @@ import brian.example.boot.batch.example1.converter.Ex1Converter2;
 import brian.example.boot.batch.example1.listener.Ex1Listener;
 import brian.example.boot.batch.example1.model.Ex1;
 
+/**
+ * Example 1. Read from File (csv) -> transform -> Write to file (csv)
+ * 
+ * @author allth
+ *
+ */
 @Configuration
 @EnableBatchProcessing
 public class Example1Config {

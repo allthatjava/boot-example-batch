@@ -46,10 +46,13 @@ public class Writer implements ItemWriter<Ex2>{
 			if(con != null) con.rollback();
 		} finally {
 			try{ 
-				if(con != null ) con.setAutoCommit(true);
-				if(pstmt != null ) pstmt.close();
-				if(con != null ) con.close();
+				if(pstmt != null ) 
+					pstmt.close();
 				
+				if(con != null ) {
+					con.setAutoCommit(true);
+					con.close();
+				}
 			} catch(Exception e) { // Do nothing 
 			}
 		}

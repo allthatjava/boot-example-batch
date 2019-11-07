@@ -27,7 +27,7 @@ public JobLauncher jobLauncher(JobRepository jobRepository) throws Exception {
 
 
 ## Example 1. Read __from File__ (csv) -> transform -> Write to file (csv)
-Read the data from file, transform then write to the csv file
+Read the data from file, transform then write to the csv file. See the files under the package brian.example.boot.batch.exmaple1.
 
 - Ex1Converter.java
 - Ex1Listener.java
@@ -48,7 +48,7 @@ __Target Data File__ : output/Ex1_Converted_1.csv, output/Ex1_Converted_2.csv
 
 
 ## Example 2. Read from File (csv) -> transform -> Write to Database
-Read the data from file, transform then write to the Database.
+Read the data from file, transform then write to the Database. See the files under the package brian.example.boot.batch.example2. 
  
 - Ex2Convert.java
 - Ex2Listener.java
@@ -81,6 +81,23 @@ CREATE TABLE people
 
 ## Example 3. Read from Database -> transform -> Write to file (csv)
  
+```
+CREATE TABLE  movie
+(
+    movie_id SERIAL PRIMARY KEY,
+    title character varying(20) COLLATE pg_catalog."default",
+    genre character varying(20) COLLATE pg_catalog."default",
+    year integer
+)
+```
  
+```
+insert into movie (title, genre, year) values('ABC','Action',2011);
+insert into movie (title, genre, year) values('DEF','Drama',2012);
+insert into movie (title, genre, year) values('HIJ','Sci-Fi',2013);
+insert into movie (title, genre, year) values('KLM','Thriller',2014);
+insert into movie (title, genre, year) values('OPQ','Comedy',2015);
+insert into movie (title, genre, year) values('RST','Reality',2016);
+```
 ## Example 4. Read from Database -> transform -> Write to Database
 

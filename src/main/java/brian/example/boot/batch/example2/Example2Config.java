@@ -1,7 +1,5 @@
 package brian.example.boot.batch.example2;
 
-import javax.sql.DataSource;
-
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -12,12 +10,9 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 
 import brian.example.boot.batch.example2.converter.Ex2Converter;
@@ -25,7 +20,7 @@ import brian.example.boot.batch.example2.listener.Ex2Listener;
 import brian.example.boot.batch.example2.model.Ex2;
 
 /**
- * Read data from a file and write them to database after process the records.
+ * Example 2. Read from File (csv) -> transform -> Write to Database
  * 
  * @author allth
  *
@@ -33,9 +28,6 @@ import brian.example.boot.batch.example2.model.Ex2;
 @Configuration
 @EnableBatchProcessing
 public class Example2Config {
-	
-	@Autowired
-	Environment env;
 	
 	// Reader
 	@Bean("ex2Reader")
@@ -57,17 +49,6 @@ public class Example2Config {
 	@Bean("ex2Processor")
 	public Ex2Converter processor1() {
 		return new Ex2Converter();
-	}
-	
-	@Bean("pgDatasource")
-	public DataSource pgDataSource() {
-		
-		return DataSourceBuilder.create()
-				.url(env.getProperty("pg.datasource.url"))
-				.driverClassName("org.postgresql.Driver")
-				.username(env.getProperty("pg.datasource.username"))
-				.password(env.getProperty("pg.datasource.password"))
-				.build();
 	}
 	
 	// Job
