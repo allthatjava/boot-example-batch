@@ -1,6 +1,6 @@
-package brian.example.boot.batch.example0.listener;
+package brian.example.boot.batch.example3.listener;
 
-import brian.example.boot.batch.example0.model.PersonOut;
+import brian.example.boot.batch.example3.model.Ex3PersonOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.BatchStatus;
@@ -11,17 +11,15 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import brian.example.boot.batch.example0.model.Person;
-
-@Component("step1Listener")
-public class JobCompletionNotificationListener extends JobExecutionListenerSupport {
+@Component("ex3Listener")
+public class Ex3Listener extends JobExecutionListenerSupport {
 	
-	private static final Logger log = LoggerFactory.getLogger(JobCompletionNotificationListener.class);
+	private static final Logger log = LoggerFactory.getLogger(Ex3Listener.class);
 
 	private final JdbcTemplate jdbcTemplate;
 
 	@Autowired
-	public JobCompletionNotificationListener(JdbcTemplate jdbcTemplate) {
+	public Ex3Listener(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
@@ -40,12 +38,12 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 		log.info("<<<0 Job[{}] Started ======", jobExecution.getJobInstance().getJobName());
 
 		// Clean up output table before execute
-		deleteAllPeople();
+//		deleteAllPeople();
 	}
 
 	private void getAllPeople() {
 		jdbcTemplate.query("SELECT first_name, last_name, created_timestamp, job_name FROM person_out ",
-			(rs, row) -> new PersonOut(
+			(rs, row) -> new Ex3PersonOut(
 				rs.getString(1),
 				rs.getString(2),
 				rs.getTimestamp(3),

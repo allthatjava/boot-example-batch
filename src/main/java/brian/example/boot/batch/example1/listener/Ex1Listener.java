@@ -23,14 +23,12 @@ public class Ex1Listener extends JobExecutionListenerSupport{
 		log.info("<<< Job[{}] Started ======", jobExecution.getJobInstance().getJobName());
 
 		deleteFile(Example1Config.fileWritePath1);
+		deleteFile(Example1Config.fileWritePath2);
 	}
 	
 	@Override
 	public void afterJob(JobExecution jobExecution) {
 		log.info("=== Job[{}] Finished ===>>>", jobExecution.getJobInstance().getJobName());
-		
-
-		deleteFile(Example1Config.fileWritePath2);
 	}
 	
 	private void deleteFile(final String filePath) {

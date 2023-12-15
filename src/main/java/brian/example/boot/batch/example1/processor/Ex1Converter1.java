@@ -1,4 +1,4 @@
-package brian.example.boot.batch.example1.converter;
+package brian.example.boot.batch.example1.processor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

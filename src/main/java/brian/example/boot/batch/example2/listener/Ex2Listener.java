@@ -27,6 +27,5 @@ public class Ex2Listener extends JobExecutionListenerSupport{
 	}
 	
 	private void deleteFile(final String filePath) {
-		
 	}
 }

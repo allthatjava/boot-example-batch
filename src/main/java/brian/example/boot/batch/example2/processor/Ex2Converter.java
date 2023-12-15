@@ -1,4 +1,4 @@
-package brian.example.boot.batch.example2.converter;
+package brian.example.boot.batch.example2.processor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +8,6 @@ import brian.example.boot.batch.example2.model.Ex2;
 
 
 public class Ex2Converter implements ItemProcessor<Ex2, Ex2>{
-	
 
     private static final Logger log = LoggerFactory.getLogger(Ex2Converter.class);
 

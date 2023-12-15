@@ -1,31 +1,24 @@
 package brian.example.boot.batch.example0;
 
-import javax.sql.DataSource;
-
+import brian.example.boot.batch.example0.model.PersonOut;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
-import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
-import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 
-import brian.example.boot.batch.example0.converter.PersonItemProcessor;
 import brian.example.boot.batch.example0.listener.JobCompletionNotificationListener;
 import brian.example.boot.batch.example0.model.Person;
 
 @Configuration
-@EnableBatchProcessing
+//@EnableBatchProcessing
 public class Example0Config {
 
     @Autowired
@@ -34,45 +27,26 @@ public class Example0Config {
     @Autowired
     public StepBuilderFactory stepBuilderFactory;
 
-    // tag::readerwriterprocessor[]
-    @Bean("step1Reader")
-    public FlatFileItemReader<Person> reader() {
-    	
-    	BeanWrapperFieldSetMapper<Person> mapper = new BeanWrapperFieldSetMapper<>();
-    	mapper.setTargetType(Person.class);
-    	
-        return new FlatFileItemReaderBuilder<Person>()
-            .name("personItemReader")
-            .resource(new ClassPathResource("sample-data.csv"))
-            .delimited()
-            .names(new String[]{"firstName", "lastName"})
-            .fieldSetMapper(mapper)
-            .build();
-    }
+    @Autowired
+    @Qualifier("ex0Reader")
+    public FlatFileItemReader<Person> ex0Reader;
 
-    @Bean("step1Processor")
-    public PersonItemProcessor processor() {
-        return new PersonItemProcessor();
-    }
+    @Autowired
+    @Qualifier("ex0Processor")
+    public ItemProcessor<Person, PersonOut> ex0Processor;
 
-    @Bean("step1Writer")
-    public JdbcBatchItemWriter<Person> writer(DataSource dataSource) {
-        return new JdbcBatchItemWriterBuilder<Person>()
-            .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
-            .sql("INSERT INTO people (first_name, last_name) VALUES (:firstName, :lastName)")
-            .dataSource(dataSource)
-            .build();
-    }
-    // end::readerwriterprocessor[]
+    @Autowired
+    @Qualifier("ex0Writer")
+    public JdbcBatchItemWriter<PersonOut> writer;
 
     // tag::jobstep[]
-    @Bean("step1Job")
+    @Bean("ex0Job")
     public Job importUserJob(
     		@Qualifier("step1Listener") JobCompletionNotificationListener listener, 
     		@Qualifier("step1") Step step1
 //    		, @Qualifier("ex1Step") Step ex1Step    		
     		) {
-        return jobBuilderFactory.get("importUserJob")
+        return jobBuilderFactory.get("ex0job")
             .incrementer(new RunIdIncrementer())
             .listener(listener)
 //            .flow(step1)
@@ -83,12 +57,13 @@ public class Example0Config {
     }
 
     @Bean("step1")
-    public Step step1(JdbcBatchItemWriter<Person> writer) {
+    public Step step1() {
         return stepBuilderFactory.get("step1")
-            .<Person, Person> chunk(10)
-            .reader(reader())
-            .processor(processor())
+            .<Person, PersonOut> chunk(10)
+            .reader(ex0Reader)
+            .processor(ex0Processor)
             .writer(writer)
+                .allowStartIfComplete(true)
             .build();
     }
     // end::jobstep[]

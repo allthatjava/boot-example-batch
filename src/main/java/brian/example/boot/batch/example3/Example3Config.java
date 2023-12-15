@@ -1,63 +1,65 @@
 package brian.example.boot.batch.example3;
 
+import brian.example.boot.batch.example3.listener.Ex3Listener;
+import brian.example.boot.batch.example3.model.Ex3PersonIn;
+import brian.example.boot.batch.example3.model.Ex3PersonOut;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
-import brian.example.boot.batch.example3.model.Ex3;
-
-/**
- * Example 3. Read from Database -> transform -> Write to file (csv)
- * 
- * @author allthatjava
- *
- */
 @Configuration
-@EnableBatchProcessing
+//@EnableBatchProcessing
 public class Example3Config {
-	
-	@Autowired
-	Environment env;
+
+    @Autowired
+    public JobBuilderFactory jobBuilderFactory;
+
     @Autowired
     public StepBuilderFactory stepBuilderFactory;
-	
-	// Job
+
+    @Autowired
+    @Qualifier("ex3Reader")
+    public JdbcCursorItemReader<Ex3PersonIn> ex0Reader;
+
+    @Autowired
+    @Qualifier("ex3Processor")
+    public ItemProcessor<Ex3PersonIn, Ex3PersonOut> ex0Processor;
+
+    @Autowired
+    @Qualifier("ex3Writer")
+    public JdbcBatchItemWriter<Ex3PersonOut> writer;
+
     @Bean("ex3Job")
-    public Job executeEx3Job(
-    		JobBuilderFactory jobBuilderFactory,
-//    		@Qualifier("ex2Listener") Ex2Listener listener,
-    		@Qualifier("ex3Step") Step ex3Step
+    public Job example3(
+    		@Qualifier("ex3Listener") Ex3Listener listener,
+    		@Qualifier("ex3Step1") Step step1
     		) {
-        return jobBuilderFactory.get("executeEx3Job")
+        return jobBuilderFactory.get("ex3job")
             .incrementer(new RunIdIncrementer())
-//            .listener(listener)
-            .start(ex3Step)				// Within ex2Job thread, ex2Step1 will be executed
+            .listener(listener)
+//            .flow(step1)
+            .start(step1)
+//            .end()
             .build();
     }
-	
-	// Step1
-	@Bean("ex3Step")
-	public Step stepEx3(StepBuilderFactory step,
-						@Qualifier("ex3Proc") ItemProcessor<Ex3, Ex3> processor,
-						@Qualifier("ex3Reader") ItemReader<Ex3> reader,
-						@Qualifier("ex3Writer") ItemWriter<Ex3> writer)
-	{
-		return step.get("ex3Step")
-				.<Ex3, Ex3>chunk(10)
-				.reader(reader)
-				.processor(processor)
-				.writer(writer)
-				.build();
-	}
+
+    @Bean("ex3Step1")
+    public Step step1() {
+        return stepBuilderFactory.get("ex3Step1")
+            .<Ex3PersonIn, Ex3PersonOut> chunk(10)
+            .reader(ex0Reader)
+            .processor(ex0Processor)
+            .writer(writer)
+            .allowStartIfComplete(true)
+            .build();
+    }
 }
